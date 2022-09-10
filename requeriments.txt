@@ -1,0 +1,6 @@
+djangorestframework
+django-allauth 
+dj-rest-auth
+django-cors-headers
+python-dotenv
+python-decouple
