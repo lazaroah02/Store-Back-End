@@ -4,11 +4,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Pedido, ListaPedido
 from . import serializer
-from django.shortcuts import redirect
+from rest_framework.permissions import IsAuthenticated 
 
 # Create your views here.
 class Pedido_api(APIView):
     serializer_class = serializer.PedidoSerializer
+    permission_classes = [IsAuthenticated]
+    #get the pedidos of the user
     def get(self, request):
         try:
             pedidos = [{"id":pedido.id,
@@ -22,21 +24,26 @@ class Pedido_api(APIView):
                     "total":pedido.total,
                     "created":pedido.created_at
                     }
-                    for pedido in Pedido.objects.all()]
+                    for pedido in Pedido.objects.filter(user = request.user)]
             return Response(pedidos, status = status.HTTP_200_OK) 
         except:
             return Response(status = status.HTTP_400_BAD_REQUEST)
-        
+    
+    #create a new pedido   
     def post(self, request):
-            serializer_pedido = self.serializer_class(data = request.data)
-            if serializer_pedido.is_valid():
-                pedido = serializer_pedido.save()
-                return Response({"id_pedido":pedido.id}, status = status.HTTP_200_OK)  
-            else:
-                return Response(status = status.HTTP_400_BAD_REQUEST)
+        print(request.data)
+        serializer_pedido = self.serializer_class(data = request.data)
+        if serializer_pedido.is_valid():
+            '''if request.user != serializer_pedido.validated_data["user"].id:
+                return Response(status = status.HTTP_401_UNAUTHORIZED)'''
+            pedido = serializer_pedido.save()
+            return Response({"id_pedido":pedido.id}, status = status.HTTP_200_OK)  
+        else:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class ListaPedido_api(APIView):
     serializer_class = serializer.ListaPedidoSerializer
+    permission_classes = [IsAuthenticated]
     def post(self, request):   
         try:
             for element in request.data:        
