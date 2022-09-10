@@ -30,11 +30,12 @@ class Pedido_api(APIView):
     def post(self, request):
             serializer_pedido = self.serializer_class(data = request.data)
             if serializer_pedido.is_valid():
-                serializer_pedido.save()
-                return redirect(to="/pedidos/lista-pedido/")   
+                pedido = serializer_pedido.save()
+                return Response({"id_pedido":pedido.id}, status = status.HTTP_200_OK)  
+            else:
+                return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class ListaPedido_api(APIView):
-    coste_total = 0
     serializer_class = serializer.ListaPedidoSerializer
     def post(self, request):   
         try:
@@ -42,10 +43,21 @@ class ListaPedido_api(APIView):
                 serializer = self.serializer_class(data = element)
                 if serializer.is_valid():
                     serializer.save()
-                    print(serializer.validated_data["id_producto"].precio)
                 else:
-                    print(serializer.errors)
-                    return Response(status =status.HTTP_500_INTERNAL_SERVER_ERROR)    
+                    return Response(status =status.HTTP_400_BAD_REQUEST)    
+            total_pedido(element["id_pedido"])    
             return Response(status =status.HTTP_200_OK)
         except:
             return Response(status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+def total_pedido(id_pedido):
+    lista_pedido = ListaPedido.objects.filter(id_pedido = id_pedido)
+    total = 0
+    
+    for element in lista_pedido:
+        total += float(element.id_producto.precio)
+    
+    pedido = Pedido.objects.get(id = id_pedido)  
+    pedido.total = total
+    pedido.save()
+          

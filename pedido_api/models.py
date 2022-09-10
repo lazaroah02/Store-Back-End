@@ -16,7 +16,7 @@ class Pedido(models.Model):
         ordering = ["id"]
         
     def __str__(self):
-        return f"{self.id}"   
+        return f"{self.id}"  
 
 class ListaPedido(models.Model):
     id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
