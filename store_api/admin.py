@@ -8,7 +8,7 @@ class CategoriaAdmin(admin.ModelAdmin):
     search_fields = ("nombre",)
 
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ("id","product_name","precio","categoria", "product_img", "updated_at")
+    list_display = ("id","product_name","precio","categoria", "product_img1", "product_img2", "product_img3", "updated_at")
     list_filter = ("product_name","categoria",)
     search_fields = ("product_name",)
 

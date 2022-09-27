@@ -41,6 +41,7 @@ class Pedido_api(APIView):
         else:
             return Response(status = status.HTTP_400_BAD_REQUEST)
 
+#list with the products of the pedido
 class ListaPedido_api(APIView):
     serializer_class = serializer.ListaPedidoSerializer
     permission_classes = [IsAuthenticated]

@@ -5,20 +5,42 @@ from rest_framework import status
 from .models import Producto, Categoria
 
 # Create your views here.
-
+class Categories(APIView):
+    def get(self, request):
+        categories = [{
+            "id":category.id,
+            "name":category.nombre,}
+             for category in Categoria.objects.all()]
+        if categories == []:
+            return Response([],status=status.HTTP_404_NOT_FOUND)
+        return Response(categories, status=status.HTTP_200_OK)
 class Store(APIView):
-    def get(self, request, category_id = None):
+    def get(self, request, category_id = None, id_product = None):
         try:
+            #return the product of the id gived
+            if id_product != None:
+                product = [{"id":producto.id, 
+                            "name":producto.product_name, 
+                            "description":producto.product_description, 
+                            "precio":producto.precio,
+                            "fotos":[producto.product_img1.url,
+                                     producto.product_img2.url,
+                                     producto.product_img3.url],
+                            "category_id":producto.categoria.id,
+                            "category_name":producto.categoria.nombre, 
+                            "updated":producto.updated_at} 
+                             for producto in Producto.objects.filter(id = id_product)]
+                if product == []:
+                    return Response([],status = status.HTTP_404_NOT_FOUND)
+                return Response(product, status = status.HTTP_200_OK)
+            
             #si no recive una categoria por url devuelve todos los productos
-            if category_id == None: 
+            if category_id == None or category_id == 0: 
                 productos = [{"id":producto.id, 
                               "name":producto.product_name, 
                               "description":producto.product_description, 
                               "precio":producto.precio,
-                              "foto":producto.product_img.url,
-                              "category_id":producto.categoria.id,
-                              "category_name":producto.categoria.nombre, 
-                              "updated":producto.updated_at} 
+                              "foto":producto.product_img1.url,} 
                              for producto in Producto.objects.all()]
                 return Response(productos, status = status.HTTP_200_OK)
             
@@ -28,13 +50,10 @@ class Store(APIView):
                               "name":producto.product_name, 
                               "description":producto.product_description, 
                               "precio":producto.precio,
-                              "foto":producto.product_img.url,
-                              "category_id":producto.categoria.id,
-                              "category_name":producto.categoria.nombre, 
-                              "updated":producto.updated_at} 
+                              "foto":producto.product_img1.url,}
                              for producto in Producto.objects.filter(categoria = category_id)]
                 if productos == []:
-                    return Response(status = status.HTTP_404_NOT_FOUND)
+                    return Response([],status = status.HTTP_404_NOT_FOUND)
                 else:
                     return Response(productos, status = status.HTTP_200_OK)
         except:
