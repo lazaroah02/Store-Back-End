@@ -19,10 +19,11 @@ class Pedido(models.Model):
         return f"{self.id}"  
 
 class ListaPedido(models.Model):
-    id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad = models.IntegerField(default = 1)
     id_pedido = models.ForeignKey(Pedido, related_name = "lista_pedido",on_delete=models.CASCADE) 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.IntegerField(default = 1)
+    subtotal = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

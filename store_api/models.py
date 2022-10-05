@@ -12,7 +12,8 @@ class Categoria(models.Model):
 
 class Producto(models.Model):
     product_name = models.CharField(max_length=200)
-    product_description = models.TextField()
+    product_description = models.CharField(max_length=200)
+    about = models.TextField(blank=True, null=True, default = " ")
     precio = models.FloatField(default = 0)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     product_img1 = models.ImageField(upload_to = "productos_images", default = "productos_images/blank.png")
@@ -26,5 +27,7 @@ class Producto(models.Model):
     
     def __str__(self):
         return self.product_name
-    
+
+class Video(models.Model):
+    video = models.FileField(blank=True, null=True, upload_to = "videos")    
     

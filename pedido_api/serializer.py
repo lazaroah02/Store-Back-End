@@ -12,12 +12,13 @@ class PedidoSerializer(serializers.ModelSerializer):
             fields = ['user']
 
 class ListaPedidoSerializer(serializers.ModelSerializer):
-    id_producto = serializers.PrimaryKeyRelatedField(queryset=Producto.objects.all())
-    cantidad = serializers.IntegerField(default = 1)
     id_pedido = serializers.PrimaryKeyRelatedField(queryset=Pedido.objects.all()) 
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    id_producto = serializers.PrimaryKeyRelatedField(queryset=Producto.objects.all())
+    cantidad = serializers.IntegerField(default = 1)
+    subtotal = serializers.FloatField(default = 0)
     
     class Meta:
         model = ListaPedido
-        fields = ["id_producto", "cantidad", "id_pedido","user"]
+        fields = ["id_producto","id_pedido","user", "cantidad", 'subtotal']
                 

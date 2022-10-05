@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status 
-from .models import Producto, Categoria
+from .models import Producto, Categoria, Video
 
 # Create your views here.
-class Categories(APIView):
+class GetCategories(APIView):
     def get(self, request):
         categories = [{
             "id":category.id,
@@ -14,6 +14,43 @@ class Categories(APIView):
         if categories == []:
             return Response([],status=status.HTTP_404_NOT_FOUND)
         return Response(categories, status=status.HTTP_200_OK)
+ 
+class VideoView(APIView):
+    def get(self, request):
+        try:
+            video = [{"id":vid.id,
+                    "video":vid.video.url}
+                    for vid in Video.objects.all()]
+            return Response(video, status=status.HTTP_200_OK)
+        except:
+            return Response([], status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class SearchAnProductView(APIView):
+    def get(self, request, name_product = None):
+        try:
+            #search a product for his name in capitalize()
+            if name_product != None: 
+                product = [{"id":producto.id, 
+                              "name":producto.product_name, 
+                              "description":producto.product_description, 
+                              "precio":producto.precio,
+                              "foto":producto.product_img1.url,} 
+                             for producto in Producto.objects.filter(product_name = str(name_product).capitalize())]
+                #try search the product for his name in lower()
+                if product == []:
+                    product = [{"id":producto.id, 
+                              "name":producto.product_name, 
+                              "description":producto.product_description, 
+                              "precio":producto.precio,
+                              "foto":producto.product_img1.url,} 
+                             for producto in Producto.objects.filter(product_name = str(name_product).lower())]
+                    if product == []:   
+                        return Response(['Not Found'], status = status.HTTP_404_NOT_FOUND)
+                    return Response(product, status = status.HTTP_200_OK)
+                return Response(product, status = status.HTTP_200_OK) 
+        except:
+            return Response([], status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class Store(APIView):
     def get(self, request, category_id = None, id_product = None):
         try:
@@ -22,6 +59,7 @@ class Store(APIView):
                 product = [{"id":producto.id, 
                             "name":producto.product_name, 
                             "description":producto.product_description, 
+                            "about":producto.about,
                             "precio":producto.precio,
                             "fotos":[producto.product_img1.url,
                                      producto.product_img2.url,
