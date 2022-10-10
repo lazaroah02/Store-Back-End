@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-x*7=_1q3&&=5@c=g5ab%033zt8t_5x*p_qhb+nfp0tqib_8j0-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.137.1']
+ALLOWED_HOSTS = ['127.0.0.1','192.168.137.1']
 
 
 # Application definition
@@ -157,6 +157,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[],
     'DEFAULT_AUTHENTICATION_CLASSES':['rest_framework.authentication.SessionAuthentication',
                                       'rest_framework.authentication.TokenAuthentication',],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5
+
 }
 #configuration for dj_rest_auth
 REST_AUTH_SERIALIZERS = {

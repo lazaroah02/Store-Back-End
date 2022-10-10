@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,7 +19,7 @@ class Pedido_api(APIView):
                               "precio":lista_pedido.id_producto.precio,
                               "cantidad":lista_pedido.cantidad,
                               'subtotal':lista_pedido.subtotal,}
-                             for lista_pedido in ListaPedido.objects.filter(id_pedido = pedido.id)],
+                             for lista_pedido in ListaPedido.objects.get(id_pedido = pedido.id)],
                     "total":pedido.total,
                     "created":pedido.created_at
                     }
@@ -63,7 +62,7 @@ class ListaPedido_api(APIView):
             return Response(status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 def total_pedido(id_pedido, total):
-    pedido = Pedido.objects.get(id = id_pedido)  
+    pedido = Pedido.objects.get(id = id_pedido) 
     pedido.total = total
     pedido.save()
           
