@@ -14,33 +14,70 @@ class UserProfile_api(APIView):
         try:
             profile = UserProfile.objects.get(user = request.user)
             return Response(
-                {"phone":profile.phone,"address":profile.address,"description":profile.description,"photo":profile.photo.url},
+                {
+                 "name": profile.name,
+                 "last_name": profile.last_name,  
+                 "phone":profile.phone,
+                 'country':profile.country,
+                 'state':profile.state,
+                 "address":profile.address,
+                 'zip_code':profile.zip_code,},
                 status=status.HTTP_200_OK)
         except:
-            return Response({"message":"No tienes perfil creado"})   
+            return Response({"name": '',
+                            "last_name": '',  
+                            "phone":'',
+                            'country':'',
+                            'state':'',
+                            "address":'',
+                            'zip_code':''}, 
+                        status=status.HTTP_404_NOT_FOUND)   
         
     
     #post to create a new user profile
     def post(self, request):
-            try:
-                serializer = self.serializer_class(data = request.data)
-                if serializer.is_valid() and serializer.validated_data["user"] == request.user:
-                    serializer.save()
-                    return Response(status = status.HTTP_200_OK)
-                else:
-                    return Response(status = status.HTTP_400_BAD_REQUEST)
-            except:
-                return Response(status = status.HTTP_400_BAD_REQUEST)    
-        
-    #put to update the user profile
-    def put(self, request):
-        serializer = self.serializer_class(data = request.data)
-        if serializer.is_valid() and serializer.validated_data["user"] == request.user:
-            profile = UserProfile.objects.get(user=request.user)
-            if profile != None:
-                serializer.update(profile, serializer.validated_data)
+        try:
+            serializer = self.serializer_class(data = {
+                'user':request.user.id,
+                'name':request.data['name'],
+                'last_name' :request.data['last_name'],
+                'phone' :request.data['phone'],
+                'country' :request.data['country'],
+                'state' :request.data['state'],
+                'address' :request.data['address'],
+                'zip_code' :request.data['zip_code'],
+            })
+            if serializer.is_valid():
+                serializer.save()
                 return Response(status = status.HTTP_200_OK)
             else:
-                return Response(status = status.HTTP_404_NOT_FOUND)
-        else:
-            return Response(status = status.HTTP_400_BAD_REQUEST)    
+                return Response(status = status.HTTP_400_BAD_REQUEST)   
+        except:
+            return Response(status = status.HTTP_400_BAD_REQUEST)              
+            
+    #put to update the user profile
+    def put(self, request):
+        try:
+            serializer = self.serializer_class(data = {
+                    'user':request.user.id,
+                    'name':request.data['name'],
+                    'last_name' :request.data['last_name'],
+                    'phone' :request.data['phone'],
+                    'country' :request.data['country'],
+                    'state' :request.data['state'],
+                    'address' :request.data['address'],
+                    'zip_code' :request.data['zip_code'],
+                }
+            )
+            if serializer.is_valid():
+                profile = UserProfile.objects.get(user=request.user)
+                if profile != None:
+                    serializer.update(profile, serializer.validated_data)
+                    return Response(status = status.HTTP_200_OK)
+                else:
+                    return Response(status = status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status = status.HTTP_400_BAD_REQUEST)  
+        except:
+            return Response(status = status.HTTP_400_BAD_REQUEST)      
+  
