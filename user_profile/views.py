@@ -47,11 +47,11 @@ class UserProfile_api(APIView):
                 'address' :request.data['address'],
                 'zip_code' :request.data['zip_code'],
             })
-            if serializer.is_valid():
-                serializer.save()
-                return Response(status = status.HTTP_200_OK)
-            else:
+            if serializer.is_valid() == False:
                 return Response(status = status.HTTP_400_BAD_REQUEST)   
+            serializer.save()
+            return Response(status = status.HTTP_200_OK)
+            
         except:
             return Response(status = status.HTTP_400_BAD_REQUEST)              
             
@@ -69,15 +69,15 @@ class UserProfile_api(APIView):
                     'zip_code' :request.data['zip_code'],
                 }
             )
-            if serializer.is_valid():
-                profile = UserProfile.objects.get(user=request.user)
-                if profile != None:
-                    serializer.update(profile, serializer.validated_data)
-                    return Response(status = status.HTTP_200_OK)
-                else:
-                    return Response(status = status.HTTP_404_NOT_FOUND)
-            else:
+            if serializer.is_valid() == False:
                 return Response(status = status.HTTP_400_BAD_REQUEST)  
+            
+            profile = UserProfile.objects.get(user=request.user)
+            if profile == None:
+                return Response(status = status.HTTP_404_NOT_FOUND)
+            serializer.update(profile, serializer.validated_data)
+            return Response(status = status.HTTP_200_OK)
+                
         except:
             return Response(status = status.HTTP_400_BAD_REQUEST)      
   
